@@ -55,6 +55,7 @@ countAboveLimit_loop:
     CMP R4, R1              //R4 - R1
     ADDHI R0, R0, #1        //if R4 > R1, R0++
     SUB R2, R2, #1          //R2--
+    B countAboveLimit_loop
 countAboveLimit_end:
     POP {R4}                //pop R4 from stack
     BX LR                   //return to caller
@@ -62,8 +63,49 @@ countAboveLimit_end:
 //d
 //int32_t findCityAligned (const char city[], const BUSINESS2 business[], uint32_t count)
 //R0 <- city[0], R1 <- business[0], R2 <- count
-findCityAligned:
-    
-findCityAligned_loop:
-findCityAligned_end:
-    BX LR
+indCityAligned:
+    PUSH {R4-R7, R8, R9, R10}
+    MOV R5, R0	     @ backup copy of city[] to R5
+    MOV R4, R1	     @ move business[0] to R4
+    ADD R4, R4, #72  @ R0 = &business[0].city[0]
+    MOV R3, #112     @ R2 = sizeof(BUSINESS)
+    MOV R10, #0	     @ index tracker
+    CMP R2, #0	     @ check if empty array
+test_string:
+    BEQ test_exit_not_found
+    MOV R6, R4
+    MOV R7, R0
+test_string_loop:
+    LDRSB R8, [R6], #1
+    LDRSB R9, [R7], #1
+    CMP R8, R9
+    BNE next_business
+    CMP R8, #0
+    BEQ test_exit_found
+    B test_string_loop
+next_business:
+    ADD R4, R4, R3
+    ADD R10, R10, #1
+    SUBS R2, R2, #1
+    B test_string
+test_exit_found:
+    MOV R0, R10
+    POP {R4-R7, R8, R9, R10}
+    BX  LR
+test_exit_not_found:
+    MOV R0, #-1
+    POP {R4-R7, R8, R9, R10}
+    BX  LR
+
+//e
+//int32_t findCityPacked (const char city[], const BUSINESS2 business[], uint32_t count)
+//R0 <- city[0], R1 <- business[0], R2 <- count
+findCityPacked:
+    PUSH {R4-R7, R8, R9, R10}
+    MOV R5, R0	     @ backup copy of city[] to R5
+    MOV R4, R1	     @ move business[0] to R4
+    ADD R4, R4, #71  @ R0 = &business[0].city[0]
+    MOV R3, #108     @ R2 = sizeof(BUSINESS)
+    MOV R10, #0	     @ index tracker
+    CMP R2, #0	     @ check if empty array
+    B test_string
