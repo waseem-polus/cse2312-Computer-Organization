@@ -49,23 +49,6 @@ prodF64_loop:
 prodF64_exit:
         BX          LR            // Exit to C
 
-// This was the Integer version we did before
-@dotpS32:
-@  PUSH  {R4, R5}
-@  MOV R3, R0
-@  MOV R0, #0
-@  CMP R2, #0
-@  BEQ dotpS32_exit
-@dotpS32_loop:
-@  LDR R4, [R3], #4
-@  LDR R5, [R1], #4
-@  MLA R0, R4, R5, R0
-@  SUBS R2, R2 ,#1
-@  BNE dotpS32_loop
-@dotpS32_exit:
-@  BX LR
-
-
 dotpF64:
 @        MOV         R3, #0       // Load Zero into R3
 @        VMOV        D0, R3, R3   // Load zeros into D0
@@ -84,6 +67,9 @@ dotpF64_loop:
 dotpF64_exit:
         BX          LR            // Exit to C
 
+//1.d
+//float maxF32(const float x[], uint32_t count)
+//R0 <- x[], R1 <- count
 maxF32:
         VLDR.F32    S0, [R0]      // Load 1st 32-bit single in S0
         ADD         R0, R0, #4    // Incr pointer
